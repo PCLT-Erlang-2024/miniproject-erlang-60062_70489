@@ -1,0 +1,9 @@
+A random delay between 1.5 and 3 seconds was introduced in the truck dispatch logic to simulate real-world delays before spawning 
+a new truck. This delay ensures a more realistic workflow while maintaining system integrity. As trucks are the drivers of the process, 
+this change does not disrupt the overall flow. The conveyor_belts remain idle until a new truck is spawned and begins interacting with 
+its assigned belt.
+
+The dispatch logic leverages the BeltPid to ensure that each newly spawned truck continues working with the same belt as its predecessor. 
+This design guarantees smooth transitions and prevents request overflow, even if a bounded queue were used, as the belt will only handle 
+new requests when a truck is available to process them. The system remains robust and efficient, handling asynchronous events while 
+maintaining logical order.

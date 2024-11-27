@@ -1,0 +1,27 @@
+The system is implemented through four modules:
+
+-main: Handles system initialization and shutdown. It spawns and stores the PIDs of the package_generator, conveyor_belts, 
+and trucks. Upon receiving a stop signal, it propagates shutdown messages to all components and waits for their termination.
+
+-package_generator: Responds to requests from the belts by generating packages with unique IDs and sending them to the 
+requesting belt.
+
+-conveyor_belt: Manages a small package queue and handles requests from trucks. If a package is not available, it requests one 
+from the generator and informs the truck to retry.
+
+-truck: Requests packages from a belt and loads them until reaching maximum capacity. It dispatches its load when full or when 
+the belt signals no packages are available, then stops or spawns a new truck as needed.
+
+
+
+Design Choices:
+
+-Message Passing: All communication is asynchronous, enabling concurrent processing across the system.
+
+-Process Isolation: Each component runs in a separate process, improving fault tolerance and scalability.
+
+-Demand-Driven Flow: Trucks initiate the request chain, ensuring packages are only generated when needed. This maintains a 
+logical sequence, where trucks only receive packages after belts request and receive them from the generator.
+
+-Queue Management: Belts use a small queue to buffer packages. This design simplifies coordination and mimics an infinite 
+queue by spacing out package generation and delivery, reducing system complexity.
