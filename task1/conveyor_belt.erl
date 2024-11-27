@@ -33,7 +33,7 @@ loop(BeltId, GeneratorPid, MainPid, Queue, Stopping) ->
         {truck_dispatching, true} ->
             io:format("Belt ~p: Received truck_dispatching signal as true~n", [BeltId]),
             loop(BeltId, GeneratorPid, MainPid, Queue, Stopping);
-        %% Unexpected message
+        %% Unexpected message (Used in Debugging)
         _ ->
             io:format("Belt ~p: Received unexpected message~n", [BeltId]),
             loop(BeltId, GeneratorPid, MainPid, Queue, Stopping)

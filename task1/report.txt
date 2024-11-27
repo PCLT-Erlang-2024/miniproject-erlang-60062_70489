@@ -12,16 +12,28 @@ from the generator and informs the truck to retry.
 -truck: Requests packages from a belt and loads them until reaching maximum capacity. It dispatches its load when full or when 
 the belt signals no packages are available, then stops or spawns a new truck as needed.
 
+All processes expect main that awaits for graceful termination basically run in a loop until shutdown is received and handled gracefully.
+For truck the loop always makes a request at the beggining to ensure system is always working, then like the other processes it sits on receive
+until a message arrives. The messages are handled trough pattern_mathcing and its functionalities correspond cleary to what their usage should be
+based on the pattern. The message that is started by truck does not have a logical way of transitioning system states, that would not keep the system
+working and looping and generating new messages, ensuring there are no deadlocks. As all data access is made in different processes that keep their own
+state and trough message passing no races should occur as no data is being shared or concurrently accessed at the same time.
 
 
 Design Choices:
 
--Message Passing: All communication is asynchronous, enabling concurrent processing across the system.
+-Message Passing: All communication is asynchronous and made trough message passing, enabling concurrent processing across the system.
 
 -Process Isolation: Each component runs in a separate process, improving fault tolerance and scalability.
 
--Demand-Driven Flow: Trucks initiate the request chain, ensuring packages are only generated when needed. This maintains a 
-logical sequence, where trucks only receive packages after belts request and receive them from the generator.
+- Demand-Driven communication and flow: The message passing flow is initiated from the end (trucks) but still ensures logical order.
+The requests starts from the truck, if a package is ready then the belt returns the package, if its not, it requests a package from the package_generator 
+and returns a no_package message so that truck will try again after a cooldown. As belt requests from package_generator, it will eventualy receive a package 
+that is then passed to truck in its retries. And so we ensure that if truck receives a package, the belt must have received the package,
+and for the belt to receive a package it had to be generated in the package_generator, proving that the logical sequence is respected. 
+Reduces complexity and consumes less resources. 
 
 -Queue Management: Belts use a small queue to buffer packages. This design simplifies coordination and mimics an infinite 
-queue by spacing out package generation and delivery, reducing system complexity.
+queue by spacing out package generation and delivery, reducing system complexity. This type of queue joined with the demand-driven communication is equivalent to thinking about an 
+infite or set sized queue with "space" between packages. Generating and storing and then almost immediately loading the truck is the same as if all those packages were already
+in the queue but the truck had to wait for the belt to consume the space between them. This was usefull to reduce implementation and design complexity.

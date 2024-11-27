@@ -1,9 +1,9 @@
-The system was enhanced with new features to improve flexibility and logging clarity:
+The system was enhanced with new features that answear the task challenges:
 
 -Random Package Sizes: The package_generator now produces packages with random sizes, adding variability to the system.
 
 -Truck Handling and Replacement: When a truck receives a package that exceeds its capacity, it returns the package to the front 
-of the belt’s queue and dispatches its current load. A new truck is then spawned in a separate process, inheriting the previous 
+of its assigned belt queue and is dispatched with its current load. A new truck is then spawned in a separate process, inheriting the previous 
 truck's role to maintain workflow continuity.
 
 -Enhanced Logging: Logging improvements now provide detailed insights into how trucks fill their capacity and handle oversized 

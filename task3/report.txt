@@ -4,6 +4,9 @@ this change does not disrupt the overall flow. The conveyor_belts remain idle un
 its assigned belt.
 
 The dispatch logic leverages the BeltPid to ensure that each newly spawned truck continues working with the same belt as its predecessor. 
-This design guarantees smooth transitions and prevents request overflow, even if a bounded queue were used, as the belt will only handle 
+This design guarantees smooth transitions and prevents request overflow, even if a set sized or infinite queue were used, as the belt will only handle 
 new requests when a truck is available to process them. The system remains robust and efficient, handling asynchronous events while 
 maintaining logical order.
+
+The system looks very synchronous at start, but as different timeouts are applied to each process, we can observe the system revealing its asynchronity.
+This is the result of the changes made in task 2 where trucks are loaded unevenly and here in task 3 where different trucks take different times to be replaced.

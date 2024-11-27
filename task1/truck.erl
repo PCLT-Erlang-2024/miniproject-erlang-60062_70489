@@ -2,11 +2,11 @@
 
 -export([start/4, loop/7]).
 
-%% Starting the truck
+%% Init truck
 start(TruckId, MainPid, NumTrucks, BeltPid) ->
-    MaxCapacity = 20,  %% Default MaxCapacity
-    CurrentLoad = 0,  %% Initial load of 0
-    BeltEmpty = false, %% Initial state of the belt
+    MaxCapacity = 20,
+    CurrentLoad = 0,
+    BeltEmpty = false,
     io:format("Truck ~p: Starting with max capacity ~p~n", [TruckId, MaxCapacity]),
     BeltPid ! {truck_dispatching, false},
     spawn(?MODULE,
@@ -47,12 +47,15 @@ loop(TruckId, MainPid, NumTrucks, BeltPid, CurrentLoad, MaxCapacity, BeltEmpty) 
             end
     end.
 
-%% Dispatch logic
+%% Final Dispatch logic
+%% Doesnt spawn new Truck
 dispatch(TruckId, CurrentLoad, MainPid) ->
     io:format("Truck ~p: Final dispatching load ~p~n", [TruckId, CurrentLoad]),
     io:format("Truck ~p: Stopped~n", [TruckId]),
     MainPid ! {truck_stopped, TruckId}. %% Notify main process.
 
+%% Normal Dispatch logic
+%% Spawns new Truck
 dispatch(TruckId, CurrentLoad, MainPid, NumTrucks, BeltPid) ->
     BeltPid ! {truck_dispatching, true},
     io:format("Truck ~p: Dispatching load ~p~n", [TruckId, CurrentLoad]),

@@ -4,7 +4,7 @@
 
 start() ->
     SystemSize = 3,
-    MainPid = self(), %% Store the main process PID
+    MainPid = self(),
 
     GeneratorPid = package_generator:start(),
     Belts = [conveyor_belt:start(I, GeneratorPid, MainPid) || I <- lists:seq(1, SystemSize)],
@@ -23,21 +23,21 @@ start() ->
 
     io:format("System running~n").
 
-%% stop/0 will be called to shut down the system
+%% stop/0 is called to shut down the system
 stop() ->
-    %% Retrieve the stored trucks and belts from the process dictionary
+    %% Retrieve the stored trucks and belts
     GeneratorPid = get(underlying_generator),
     TruckCounter = get(truck_shutdown_counter),
     BeltCounter = get(belt_shutdown_counter),
 
-    %% Send stop signal to the generator
+    %% Stop generator
     GeneratorPid ! stop,
 
-    %% Send stop signal to each truck
+    %% Send stop to each truck
     Trucks = get(underlying_trucks),
     lists:foreach(fun(Truck) -> Truck ! stop end, Trucks),
 
-    %% Send stop signal to each belt
+    %% Send stop to each belt
     Belts = get(underlying_belts),
     lists:foreach(fun(Belt) -> Belt ! stop end, Belts),
 
@@ -47,7 +47,6 @@ stop() ->
 
     io:format("System stopped~n").
 
-%% Wait for all trucks and belts to stop before fully shutting down
 wait_for_shutdown(0, 0) ->
     io:format("All trucks and belts have stopped~n");
 wait_for_shutdown(TruckCounter, BeltCounter) ->
