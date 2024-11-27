@@ -1,0 +1,4 @@
+A random range of values was introduce in package generator so that packages can have different sizes.
+When trucks receive a package they cannot handle they return the package to the belt (that puts it at the front of the queue) and dispatchs,
+when a truck is dispatched he will be replaced by a new truck that is spawned ina new process and carries over from where the other truck left.
+Loging was enhanced to show that logic and how the space of the truck is filled.

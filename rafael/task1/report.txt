@@ -1,0 +1,19 @@
+The system is implemented trough 4 packages:
+- main: receives the console signals to start and stop the program, starts the other packages processes and stores 
+so that when the stop signal is received it propagates said signal;
+- package_generator: Receives the request from belts to generate packages and returns them;
+- conveyor_belt: Receives requests from trucks and makes requests to generator, 
+maintains a small package queue that is used to buffer packages to send to truck when requested.  
+- truck: makes requests  to the belt and keeps loading received packages until it reaches maxCapacity.
+
+Design Choices:
+- All communication is handled torugh message passing:
+- All Entities are running in separate spawned processes:
+- Demand-Driven communication, the message passing flow is initiated from the end (trucks) but still ensures logical order,
+the request starts from the truck, if a package is ready the the belt return the package, if its not it requests from the package_generator 
+and return a no_package message so truck will try again. As belt request from package_generator it will eventualy receive a package 
+that the belt wil receive and pass to truck in its retries. And so we ensure that if truck receives a package, the belt must have received the package,
+and for the belt to receive a package it had to be generated in the package_generator.
+- Small queue size for buffering: The type of queue we are implemented joined with the demand-driven communication is equivalent to thinking about an 
+infite or set sized queue with "space" between packages. Generating and storing to almost immediately load the truck is the same as if all those packages were already
+in the queue but the truck had to wait for the belt to consume the space between them. This was usefull to reduce implementation and design complexity.

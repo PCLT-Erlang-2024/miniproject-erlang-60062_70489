@@ -1,0 +1,5 @@
+A random delay between 1.5 and 3 seconds was added to the trucks dispacth logic to force a delay before a new truck is spawned.
+As the system was already reliant on truck initiating the chain of events its already prepared for these changes.
+The belt will only continue working when a new truck is spawned and start interacting with it.
+The dispatch logic ensures trough BeltPid that the new truck will keep interacting with the belt assigned to the previous truck.
+The design of the system ensures that even if we had a sized queue it would not overflow as no more request would be made while a truck was not ready to handle them.
